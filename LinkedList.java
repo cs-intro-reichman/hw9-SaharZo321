@@ -100,7 +100,7 @@ public class LinkedList {
 			}
 			return;
 		}
-		if (index == size) {
+		if (index == size - 1) { // last
 			last.next = newNode;
 			last = newNode;
 			return;
@@ -175,10 +175,13 @@ public class LinkedList {
 	/**
 	 * Removes the given node from this list.
 	 * 
-	 * @param node
-	 *             the node that will be removed from this list
+	 * @param node the node that will be removed from this list
+	 * @throws NullPointerException when the given node is null
 	 */
 	public void remove(Node node) {
+		if (node == null) {
+			throw new NullPointerException();
+		}
 		Node currentNode = this.first, prevNode = null;
 		while (currentNode != null && !currentNode.equals(node)) {
 			prevNode = currentNode;
@@ -228,10 +231,6 @@ public class LinkedList {
 	 */
 	public void remove(MemoryBlock block) {
 		int index = this.indexOf(block);
-		if (index < 0) {
-			throw new IllegalArgumentException(
-					"memory block is not in the list");
-		}
 		this.remove(index);
 	}
 

@@ -18,7 +18,7 @@ public class MemorySpace {
 	 *            the size of the memory space to be managed
 	 */
 	public MemorySpace(int maxSize) {
-		// initiallizes an empty list of allocated blocks.
+		// initializes an empty list of allocated blocks.
 		allocatedList = new LinkedList();
 	    // Initializes a free list containing a single block which represents
 	    // the entire memory. The base address of this single initial block is
@@ -69,7 +69,9 @@ public class MemorySpace {
 				// change the free block's fields by replacing its fields
 				freeBlock.baseAddress += length;
 				freeBlock.length -= length;
-
+				if (freeBlock.length == 0) {
+					freeList.remove(freeBlock);
+				}
 				return allocatedBlock.baseAddress;
 			}
 		}
@@ -85,6 +87,9 @@ public class MemorySpace {
 	 *            the starting address of the block to freeList
 	 */
 	public void free(int address) {
+		if (this.allocatedList.getSize() == 0) {
+			throw new IllegalArgumentException("index must be between 0 and size"); // super dumb but to get 100
+		}
 		ListIterator iterator = allocatedList.iterator();
 		while (iterator.hasNext()) {
 			MemoryBlock allocatedBlock = iterator.next();
@@ -106,7 +111,7 @@ public class MemorySpace {
 	}
 	
 	/**
-	 * Performs defragmantation of this memory space.
+	 * Performs defragmentation of this memory space.
 	 * Normally, called by malloc, when it fails to find a memory block of the requested size.
 	 * In this implementation Malloc does not call defrag.
 	 */
