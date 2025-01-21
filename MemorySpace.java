@@ -58,7 +58,21 @@ public class MemorySpace {
 	 * @return the base address of the allocated block, or -1 if unable to allocate
 	 */
 	public int malloc(int length) {		
-		//// Replace the following statement with your code
+		ListIterator iterator = freeList.iterator();
+		while (iterator.hasNext()) {
+			MemoryBlock freeBlock = iterator.next();
+
+			if (freeBlock.length >= length) { // found free block
+				MemoryBlock allocatedBlock = new MemoryBlock(freeBlock.baseAddress, length);
+				allocatedList.addLast(allocatedBlock);
+
+				// change the free block's fields by replacing its fields
+				freeBlock.baseAddress += length;
+				freeBlock.length -= length;
+
+				return allocatedBlock.baseAddress;
+			}
+		}
 		return -1;
 	}
 
@@ -71,7 +85,16 @@ public class MemorySpace {
 	 *            the starting address of the block to freeList
 	 */
 	public void free(int address) {
-		//// Write your code here
+		ListIterator iterator = allocatedList.iterator();
+		while (iterator.hasNext()) {
+			MemoryBlock allocatedBlock = iterator.next();
+
+			if (address == allocatedBlock.baseAddress) {
+				allocatedList.remove(allocatedBlock);
+				freeList.addLast(allocatedBlock);
+				return;
+			}
+		}
 	}
 	
 	/**
@@ -79,7 +102,7 @@ public class MemorySpace {
 	 * for debugging purposes.
 	 */
 	public String toString() {
-		return freeList.toString() + "\n" + allocatedList.toString();		
+		return freeList + "\n" + allocatedList;		
 	}
 	
 	/**
@@ -88,7 +111,21 @@ public class MemorySpace {
 	 * In this implementation Malloc does not call defrag.
 	 */
 	public void defrag() {
-		/// TODO: Implement defrag test
-		//// Write your code here
+		ListIterator iterator1 = freeList.iterator();
+		while (iterator1.hasNext()) {
+			MemoryBlock freeBlock = iterator1.next();
+			ListIterator iterator2 = freeList.iterator();
+			int newAddress = freeBlock.baseAddress + freeBlock.length;
+			while (iterator2.hasNext()) {
+				MemoryBlock checkedFreeBlock = iterator2.next();
+				if (checkedFreeBlock.baseAddress == newAddress) {
+					System.out.println("merging " + freeBlock + " with " + checkedFreeBlock);
+					// merge
+					freeBlock.length += checkedFreeBlock.length;
+					freeList.remove(checkedFreeBlock);
+					iterator1 = freeList.iterator();
+				}
+			}
+		}
 	}
 }
