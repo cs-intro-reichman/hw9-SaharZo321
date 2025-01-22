@@ -1,3 +1,6 @@
+import java.util.concurrent.Callable;
+import java.util.function.Function;
+
 /**
  * Represents a list of Nodes.
  */
@@ -158,9 +161,13 @@ public class LinkedList {
 	 * @return the index of the block, or -1 if the block is not in this list
 	 */
 	public int indexOf(MemoryBlock block) {
+		return this.indexOf(checkedBlock -> block.equals(checkedBlock));
+	}
+
+	public int indexOf(Function<MemoryBlock, Boolean> callback) {
 		int index = 0;
 		Node currentNode = this.first;
-		while (currentNode != null && !currentNode.block.equals(block)) {
+		while (currentNode != null && !callback.apply(currentNode.block)) {
 			index++;
 			currentNode = currentNode.next;
 		}
@@ -232,6 +239,37 @@ public class LinkedList {
 	public void remove(MemoryBlock block) {
 		int index = this.indexOf(block);
 		this.remove(index);
+	}
+
+	/**
+	 * returns a new LinkedList of memory blocks which are filtered by the given callback.
+	 * @param callback a function which returns true for every wanted block.
+	 */
+	public LinkedList filter(Function<MemoryBlock, Boolean> callback) {
+		LinkedList list = new LinkedList();
+		ListIterator iterator = this.iterator();
+		while (iterator.hasNext()) {
+			MemoryBlock block = iterator.next();
+			if (callback.apply(block)) {
+				list.addLast(block);
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * returns the first memory block in the list which is returned with true by the given callback function. returns null if no block is found.
+	 * @param callback a function that is applied on every block in the list.
+	 */
+	public MemoryBlock getFirstWhich(Function<MemoryBlock, Boolean> callback) {
+		ListIterator iterator = this.iterator();
+		while (iterator.hasNext()) {
+			MemoryBlock block = iterator.next();
+			if (callback.apply(block)) {
+				return block;
+			}
+		}
+		return null;
 	}
 
 	/**
