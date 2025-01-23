@@ -1,4 +1,3 @@
-import java.util.concurrent.Callable;
 import java.util.function.Function;
 
 /**
@@ -108,10 +107,7 @@ public class LinkedList {
 			last = newNode;
 			return;
 		}
-		Node currentNode = this.first;
-		for (int i = 1; i < index; i++) {
-			currentNode = currentNode.next;
-		}
+		Node currentNode = this.getNode(index - 1);
 		newNode.next = currentNode.next;
 		currentNode.next = newNode;
 	}
